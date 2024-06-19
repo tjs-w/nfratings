@@ -1,0 +1,232 @@
+body {
+  font-family: "Montserrat", sans-serif;
+  background-color: #2c2c2c;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  overflow: hidden; /* Prevent scrollbars */
+}
+
+.container {
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 320px; /* Increase width for better alignment */
+  text-align: center;
+}
+
+.container h1 {
+  font-size: 24px;
+  margin-bottom: 25px;
+}
+
+.container h1 .highlight {
+  color: #e50914;
+}
+
+.container h2 {
+  font-size: 14px;
+  margin-bottom: 15px;
+  color: #bbbbbb;
+}
+
+.container label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  text-align: left;
+  padding: 0 5px;
+}
+
+.container .input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  border-radius: 5px;
+  padding: 3px 8px;
+  margin-bottom: 10px; /* Add margin for better spacing */
+}
+
+.container input,
+.container select {
+  width: calc(100% - 30px); /* Adjust width to accommodate toggle icon */
+  border: none;
+  border-radius: 5px;
+  background-color: #333;
+  color: #fff;
+  font-size: 14px;
+}
+
+.container .toggle-icon {
+  position: absolute;
+  right: 8px;
+  cursor: pointer;
+  color: #bbbbbb;
+}
+
+.container button {
+  background-color: #e50914;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.container button:hover {
+  background-color: #e50914;
+}
+
+.collapsible {
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 14px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.collapsible:after {
+  content: "\002B";
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.collapsible.active:after {
+  content: "\2212";
+}
+
+.content {
+  padding: 10px 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #2c2c2c;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.settings-section {
+  background-color: #333;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.settings-section label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 5px;
+  justify-content: space-between; /* Align slider value to the right */
+}
+
+.settings-section label img {
+  margin-right: 5px;
+}
+
+.settings-section input[type="range"] {
+  width: calc(100% - 30px);
+  height: 3px; /* Make slider very thin */
+  background: linear-gradient(to right, #e50914, white);
+  border-radius: 5px;
+  -webkit-appearance: none;
+  appearance: none;
+  margin-bottom: 25px;
+}
+
+.settings-section input[type="range"]::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  background: #e50914;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.slider-value {
+  font-weight: bold;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.apply-settings-button {
+  background-color: #e50914;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  position: absolute; /* Remove from normal flow */
+  margin-left: auto /* Align to the right */;
+}
+
+.apply-settings-button:hover {
+  background-color: #e50914;
+}
+
+.reset-settings-button {
+  background-color: #333 !important; /* Ensure dark-grey color */
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #bbbbbb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 35px; /* Same height as Apply button */
+  font-size: 14px; /* Same font size as Apply button */
+  margin-left: auto; /* Align to the right */
+}
+
+.reset-settings-button:hover {
+  background-color: #444 !important;
+}
+
+.reset-settings-button .material-icons {
+  font-size: 24px;
+}
+
+#status {
+  color: grey;
+  margin-top: 10px;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 35px;
+  padding-right: 25px;
+}
+
+.settings-header .material-icons {
+  color: #e50914;
+  padding-right: 5px; /* Add padding to the right of the icon */
+}

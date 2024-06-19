@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NFRatings Settings</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1><span class="highlight">NF</span>Ratings</h1>
+      <button type="button" class="collapsible">Setup API Key</button>
+      <div class="content">
+        <label for="api-key-input">API Key</label>
+        <div class="input-wrapper">
+          <input
+            type="password"
+            id="api-key-input"
+            placeholder="Enter your API Key"
+          />
+          <span class="material-icons toggle-icon" id="toggle-api-key"
+            >visibility</span
+          >
+        </div>
+        <button id="save-api-key">Save</button>
+      </div>
+      <div class="settings-section">
+        <h3 class="settings-header">
+          <span class="material-icons">tune</span> Filter Settings
+        </h3>
+        <label for="min-imdb-score">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"
+            alt="IMDb"
+            style="width: 25px"
+          />
+          IMDb Score
+          <span class="slider-value" id="imdb-score-value">0 </span>
+        </label>
+        <input type="range" id="min-imdb-score" min="0" max="10" step="0.1" />
+        <label for="min-tomato-score">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg"
+            alt="Tomato"
+            style="width: 20px"
+          />
+          Tomato Score
+          <span class="slider-value" id="tomato-score-value">0%</span>
+        </label>
+        <input
+          type="range"
+          id="min-tomato-score"
+          min="0"
+          max="100"
+          step="0.1"
+        />
+        <label for="min-popcorn-score">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/d/da/Rotten_Tomatoes_positive_audience.svg"
+            alt="Popcorn"
+            style="width: 18px"
+          />
+          Popcorn Score
+          <span class="slider-value" id="popcorn-score-value">0%</span>
+        </label>
+        <input
+          type="range"
+          id="min-popcorn-score"
+          min="0"
+          max="100"
+          step="0.1"
+        />
+        <div class="button-container">
+          <button class="apply-settings-button" id="apply-settings">
+            Apply
+          </button>
+          <button class="reset-settings-button" title="Reset Filter">
+            <span class="material-icons">settings_backup_restore</span>
+          </button>
+        </div>
+      </div>
+      <div id="status"></div>
+    </div>
+    <script src="logger.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
