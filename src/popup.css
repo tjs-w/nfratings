@@ -1,0 +1,236 @@
+body {
+  font-family: "Montserrat", sans-serif; /* Set the font family for the entire page */
+  background-color: #2c2c2c; /* Set the background color of the body */
+  color: #ffffff; /* Set the text color */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  display: flex; /* Use flexbox for layout */
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+  height: 100%; /* Set the height to 100% of the viewport */
+  overflow: hidden; /* Prevent scrollbars */
+}
+
+.container {
+  background-color: #1e1e1e; /* Set the background color of the container */
+  border-radius: 10px; /* Add rounded corners to the container */
+  padding: 20px; /* Add padding inside the container */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a box shadow */
+  width: 320px; /* Set the width of the container */
+  text-align: center; /* Center the content inside the container */
+}
+
+.container h1 {
+  font-size: 24px; /* Set the font size of the heading */
+  margin-bottom: 25px; /* Add margin at the bottom of the heading */
+}
+
+.container h1 .highlight {
+  color: #e50914; /* Set the color of the highlighted text */
+}
+
+.container h2 {
+  font-size: 14px; /* Set the font size of the subheading */
+  margin-bottom: 15px; /* Add margin at the bottom of the subheading */
+  color: #bbbbbb; /* Set the color of the subheading */
+}
+
+.container label {
+  display: block; /* Display labels as block elements */
+  margin-bottom: 5px; /* Add margin at the bottom of labels */
+  font-size: 14px; /* Set the font size of labels */
+  text-align: left; /* Align labels to the left */
+  padding: 0 5px; /* Add padding to labels */
+}
+
+.container .input-wrapper {
+  position: relative; /* Set the position of the input wrapper */
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center the content vertically */
+  background-color: #333; /* Set the background color of the input wrapper */
+  border-radius: 5px; /* Add rounded corners to the input wrapper */
+  padding: 3px 8px; /* Add padding inside the input wrapper */
+  margin-bottom: 10px; /* Add margin at the bottom of the input wrapper */
+}
+
+.container input,
+.container select {
+  width: calc(100% - 30px); /* Set the width of the input/select element */
+  border: none; /* Remove the border */
+  border-radius: 5px; /* Add rounded corners to the input/select element */
+  background-color: #333; /* Set the background color of the input/select element */
+  color: #fff; /* Set the text color of the input/select element */
+  font-size: 14px; /* Set the font size of the input/select element */
+}
+
+.container .toggle-icon {
+  position: absolute; /* Set the position of the toggle icon */
+  right: 8px; /* Position the toggle icon to the right */
+  cursor: pointer; /* Set the cursor to a pointer */
+  color: #bbbbbb; /* Set the color of the toggle icon */
+}
+
+.container button {
+  background-color: #e50914; /* Set the background color of the button */
+  color: white; /* Set the text color of the button */
+  padding: 8px 12px; /* Add padding inside the button */
+  border: none; /* Remove the border */
+  border-radius: 5px; /* Add rounded corners to the button */
+  cursor: pointer; /* Set the cursor to a pointer */
+  font-size: 14px; /* Set the font size of the button */
+}
+
+.container button:hover {
+  background-color: #e50914; /* Set the background color of the button on hover */
+}
+
+.collapsible {
+  background-color: #333; /* Set the background color of the collapsible element */
+  color: white; /* Set the text color of the collapsible element */
+  cursor: pointer; /* Set the cursor to a pointer */
+  padding: 10px; /* Add padding inside the collapsible element */
+  width: 100%; /* Set the width of the collapsible element */
+  border: none; /* Remove the border */
+  text-align: left; /* Align the text to the left */
+  outline: none; /* Remove the outline */
+  font-size: 14px; /* Set the font size of the collapsible element */
+  border-radius: 5px; /* Add rounded corners to the collapsible element */
+  margin-bottom: 10px; /* Add margin at the bottom of the collapsible element */
+}
+
+.collapsible:after {
+  content: "\002B"; /* Set the content of the collapsible element to a plus sign */
+  color: white; /* Set the color of the collapsible element */
+  font-weight: bold; /* Set the font weight of the collapsible element */
+  float: right; /* Float the plus sign to the right */
+  margin-left: 5px; /* Add margin to the left of the plus sign */
+}
+
+.collapsible.active:after {
+  content: "\2212"; /* Set the content of the active collapsible element to a minus sign */
+}
+
+.content {
+  padding: 10px 18px; /* Add padding inside the content element */
+  display: none; /* Hide the content element by default */
+  overflow: hidden; /* Hide any overflowing content */
+  background-color: #2c2c2c; /* Set the background color of the content element */
+  border-radius: 5px; /* Add rounded corners to the content element */
+  margin-top: 10px; /* Add margin at the top of the content element */
+}
+
+.settings-section {
+  background-color: #333; /* Set the background color of the settings section */
+  padding: 10px; /* Add padding inside the settings section */
+  border-radius: 5px; /* Add rounded corners to the settings section */
+  margin-top: 15px; /* Add margin at the top of the settings section */
+  margin-bottom: 15px; /* Add margin at the bottom of the settings section */
+}
+
+.settings-section label {
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center the content vertically */
+  font-size: 14px; /* Set the font size of the label */
+  margin-bottom: 5px; /* Add margin at the bottom of the label */
+  justify-content: space-between; /* Align the slider value to the right */
+}
+
+.settings-section label img {
+  margin-right: 5px; /* Add margin to the right of the image */
+}
+
+.settings-section input[type="range"] {
+  width: calc(100% - 30px); /* Set the width of the range input */
+  height: 3px; /* Set the height of the range input */
+  background: linear-gradient(
+    to right,
+    #e50914,
+    white
+  ); /* Set the background gradient of the range input */
+  border-radius: 5px; /* Add rounded corners to the range input */
+  -webkit-appearance: none; /* Remove default styling in WebKit browsers */
+  appearance: none; /* Remove default styling in other browsers */
+  margin-bottom: 25px; /* Add margin at the bottom of the range input */
+}
+
+.settings-section input[type="range"]::-webkit-slider-thumb {
+  width: 12px; /* Set the width of the range input thumb */
+  height: 12px; /* Set the height of the range input thumb */
+  background: #e50914; /* Set the background color of the range input thumb */
+  border: 2px solid white; /* Add a border to the range input thumb */
+  border-radius: 50%; /* Make the range input thumb circular */
+  cursor: pointer; /* Set the cursor to a pointer */
+  -webkit-appearance: none; /* Remove default styling in WebKit browsers */
+  appearance: none; /* Remove default styling in other browsers */
+}
+
+.slider-value {
+  font-weight: bold; /* Set the font weight of the slider value */
+}
+
+.button-container {
+  display: flex; /* Use flexbox for layout */
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+  margin-top: 10px; /* Add margin at the top of the button container */
+  margin-bottom: 10px; /* Add margin at the bottom of the button container */
+}
+
+.apply-settings-button {
+  background-color: #e50914; /* Set the background color of the apply settings button */
+  color: white; /* Set the text color of the apply settings button */
+  padding: 8px 12px; /* Add padding inside the apply settings button */
+  border: none; /* Remove the border */
+  border-radius: 5px; /* Add rounded corners to the apply settings button */
+  cursor: pointer; /* Set the cursor to a pointer */
+  font-size: 14px; /* Set the font size of the apply settings button */
+  position: absolute; /* Remove from normal flow */
+  margin-left: auto; /* Align to the right */
+}
+
+.apply-settings-button:hover {
+  background-color: #e50914; /* Set the background color of the apply settings button on hover */
+}
+
+.reset-settings-button {
+  background-color: #333 !important; /* Set the background color of the reset settings button */
+  border: none; /* Remove the border */
+  border-radius: 5px; /* Add rounded corners to the reset settings button */
+  padding: 8px 12px; /* Add padding inside the reset settings button */
+  cursor: pointer; /* Set the cursor to a pointer */
+  color: #bbbbbb; /* Set the text color of the reset settings button */
+  display: inline-flex; /* Display the reset settings button as inline-flex */
+  align-items: center; /* Center the content vertically */
+  justify-content: center; /* Center the content horizontally */
+  height: 35px; /* Set the height of the reset settings button */
+  font-size: 14px; /* Set the font size of the reset settings button */
+  margin-left: auto; /* Align to the right */
+}
+
+.reset-settings-button:hover {
+  background-color: #444 !important; /* Set the background color of the reset settings button on hover */
+}
+
+.reset-settings-button .material-icons {
+  font-size: 24px; /* Set the font size of the material icon */
+}
+
+#status {
+  color: grey; /* Set the color of the status element */
+  margin-top: 10px; /* Add margin at the top of the status element */
+}
+
+.settings-header {
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center the content vertically */
+  justify-content: center; /* Center the content horizontally */
+  font-weight: bold; /* Set the font weight of the settings header */
+  font-size: 16px; /* Set the font size of the settings header */
+  margin-bottom: 35px; /* Add margin at the bottom of the settings header */
+  padding-right: 25px; /* Add padding to the right of the settings header */
+}
+
+.settings-header .material-icons {
+  color: #e50914; /* Set the color of the material icon */
+  padding-right: 5px; /* Add padding to the right of the material icon */
+}

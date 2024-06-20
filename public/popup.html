@@ -4,38 +4,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NFRatings Settings</title>
+    <!-- Importing Montserrat font from Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap"
       rel="stylesheet"
     />
+    <!-- Importing Material Icons font from Google Fonts -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
+    <!-- Importing custom CSS styles from popup.css -->
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <div class="container">
+      <!-- Heading with the title "NF Ratings" -->
       <h1><span class="highlight">NF</span>Ratings</h1>
+      <!-- Button to toggle the visibility of the API Key input field -->
       <button type="button" class="collapsible">Setup API Key</button>
       <div class="content">
+        <!-- Label for the API Key input field -->
         <label for="api-key-input">API Key</label>
         <div class="input-wrapper">
+          <!-- Password input field for the API Key -->
           <input
             type="password"
             id="api-key-input"
             placeholder="Enter your API Key"
           />
+          <!-- Icon to toggle the visibility of the API Key -->
           <span class="material-icons toggle-icon" id="toggle-api-key"
             >visibility</span
           >
         </div>
+        <!-- Button to save the API Key -->
         <button id="save-api-key">Save</button>
       </div>
       <div class="settings-section">
+        <!-- Heading for the filter settings section -->
         <h3 class="settings-header">
           <span class="material-icons">tune</span> Filter Settings
         </h3>
+        <!-- Label and range input for IMDb Score -->
         <label for="min-imdb-score">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"
@@ -45,7 +56,9 @@
           IMDb Score
           <span class="slider-value" id="imdb-score-value">0 </span>
         </label>
+        <!-- Input slider for IMDb Score -->
         <input type="range" id="min-imdb-score" min="0" max="10" step="0.1" />
+        <!-- Label and range input for Tomato Score -->
         <label for="min-tomato-score">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg"
@@ -55,6 +68,7 @@
           Tomato Score
           <span class="slider-value" id="tomato-score-value">0%</span>
         </label>
+        <!-- Input slider for Tomato Score -->
         <input
           type="range"
           id="min-tomato-score"
@@ -62,6 +76,7 @@
           max="100"
           step="0.1"
         />
+        <!-- Label and range input for Popcorn Score -->
         <label for="min-popcorn-score">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/d/da/Rotten_Tomatoes_positive_audience.svg"
@@ -71,6 +86,7 @@
           Popcorn Score
           <span class="slider-value" id="popcorn-score-value">0%</span>
         </label>
+        <!-- Input slider for Popcorn Score -->
         <input
           type="range"
           id="min-popcorn-score"
@@ -79,17 +95,22 @@
           step="0.1"
         />
         <div class="button-container">
+          <!-- Button to apply the filter settings -->
           <button class="apply-settings-button" id="apply-settings">
             Apply
           </button>
+          <!-- Button to reset the filter settings -->
           <button class="reset-settings-button" title="Reset Filter">
             <span class="material-icons">settings_backup_restore</span>
           </button>
         </div>
       </div>
+      <!-- Placeholder for displaying status messages -->
       <div id="status"></div>
     </div>
+    <!-- Importing logger.js for logging functionality -->
     <script src="logger.js"></script>
+    <!-- Importing popup.js for handling user interactions -->
     <script src="popup.js"></script>
   </body>
 </html>

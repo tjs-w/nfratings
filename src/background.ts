@@ -1,13 +1,24 @@
-importScripts("logger.js", "common.js"); // Load utils before executing this script
+try {
+  importScripts(
+    chrome.runtime.getURL("logger.js"),
+    chrome.runtime.getURL("common.js")
+  ); // Load utils before executing this script
+} catch (error) {
+  logger.error("Error loading dependencies:", error);
+}
 
-let apiKey = null;
+let apiKey: string | null = null;
 
-// Function to fetch ratings
-async function fetchRatings(title) {
+/**
+ * Function to fetch ratings from OMDB API
+ * @param title - The title of the movie/series to fetch ratings for
+ * @returns A promise that resolves with the ratings data or null if an error occurs
+ */
+async function fetchRatingsHandler(title: string): Promise<any> {
   if (!apiKey) {
     await initializeExtension();
     if (!apiKey) {
-      logger.error("%cAPI key is not available", "color: red;");
+      logger.error("API key is not available");
       return null;
     }
   }
@@ -29,7 +40,7 @@ async function fetchRatings(title) {
   const data = await response.json();
   const tomatoMeterFromRating = () => {
     return data?.Ratings?.find(
-      (rating) => rating?.Source === "Rotten Tomatoes"
+      (rating: any) => rating?.Source === "Rotten Tomatoes"
     )?.Value.replace("%", "");
   };
   return {
@@ -43,8 +54,11 @@ async function fetchRatings(title) {
   };
 }
 
-async function initializeExtension() {
-  logger.error(`Logger level: ${logger.level}`);
+/**
+ * Function to initialize the extension by loading necessary settings from storage
+ */
+async function initializeExtension(): Promise<void> {
+  logger.debug("Logger level: ", logger.getLevel());
   try {
     const result = await chromeStorageGet([
       "NFRatingsSettings",
@@ -52,20 +66,22 @@ async function initializeExtension() {
     ]);
     if (result.NFRatingsSettings?.apiKey) {
       apiKey = result.NFRatingsSettings.apiKey;
-      logger.debug("%cAPI key fetched", "color: green;");
+      logger.debug("API key fetched");
     } else {
-      logger.error("%cOMDb API key is not set in localStorage", "color: red;");
+      logger.error("OMDb API key is not set in localStorage");
     }
   } catch (error) {
-    logger.error("%cError initializing extension:", "color: red;", error);
+    logger.error("Error initializing extension:", error);
   }
 }
 
+// Event listener for extension installation
 chrome.runtime.onInstalled.addListener(() => {
-  logger.debug("%cNFRatings successfully installed!", "color: green;");
+  logger.debug("NFRatings successfully installed!");
   initializeExtension();
 });
 
+// Event listener for extension startup
 chrome.runtime.onStartup.addListener(() => {
   initializeExtension();
 });
@@ -75,22 +91,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   try {
     switch (message.action) {
       case "fetchRatings":
-        circuitBreaker(fetchRatings)(message.title).then((ratings) => {
-          sendResponse({ status: "success", ratings });
-        });
+        circuitBreaker(fetchRatingsHandler)(message.title)
+          .then((ratings) => {
+            sendResponse({ status: "success", ratings });
+          })
+          .catch((error: any) => {
+            logger.error("Error fetching ratings: ", error.message);
+            sendResponse({ status: "error", error: error.message });
+          });
         break;
       default:
-        logger.warn("%cUnknown action:", "color: orange;", message.action);
+        logger.warn("Unknown action: ", message.action);
         sendResponse({ status: "error", error: "Unknown action" });
         break;
     }
-  } catch (error) {
-    logger.error(
-      `%cError handling message ${message.action}:`,
-      "color: red;",
-      error
-    );
+  } catch (error: any) {
+    logger.error("Error handling message ", message.action, ":", error);
     sendResponse({ status: "error", error: error.message });
   }
   return true; // Indicates that the response will be sent asynchronously
 });
+
+export { fetchRatingsHandler }; // Add this export statement
+// Add this export statement

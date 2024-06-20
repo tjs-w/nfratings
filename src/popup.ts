@@ -1,15 +1,41 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const apiKeyInput: HTMLInputElement = document.getElementById("api-key-input") as HTMLInputElement;
-  const toggleApiKey: HTMLElement = document.getElementById("toggle-api-key") as HTMLElement;
-  const saveApiKeyButton: HTMLElement = document.getElementById("save-api-key") as HTMLElement;
-  const minIMDbScoreSlider: HTMLInputElement = document.getElementById("min-imdb-score") as HTMLInputElement;
-  const minTomatoScoreSlider: HTMLInputElement = document.getElementById("min-tomato-score") as HTMLInputElement;
-  const minPopcornScoreSlider: HTMLInputElement = document.getElementById("min-popcorn-score") as HTMLInputElement;
-  const applySettingsButton: HTMLElement = document.getElementById("apply-settings") as HTMLElement;
-  const resetSettingsButton: HTMLElement = document.querySelector(".reset-settings-button") as HTMLElement;
+  // Get references to various elements in the DOM
+  const apiKeyInput = document.getElementById(
+    "api-key-input"
+  ) as HTMLInputElement;
+  const toggleApiKey = document.getElementById("toggle-api-key") as HTMLElement;
+  const saveApiKeyButton = document.getElementById(
+    "save-api-key"
+  ) as HTMLButtonElement;
+  const minIMDbScoreSlider = document.getElementById(
+    "min-imdb-score"
+  ) as HTMLInputElement;
+  const minTomatoScoreSlider = document.getElementById(
+    "min-tomato-score"
+  ) as HTMLInputElement;
+  const minPopcornScoreSlider = document.getElementById(
+    "min-popcorn-score"
+  ) as HTMLInputElement;
+  const applySettingsButton = document.getElementById(
+    "apply-settings"
+  ) as HTMLButtonElement;
+  const resetSettingsButton = document.querySelector(
+    ".reset-settings-button"
+  ) as HTMLButtonElement;
+
+  // Set initial state of sliders to 0
+  minIMDbScoreSlider.value = "0";
+  minTomatoScoreSlider.value = "0";
+  minPopcornScoreSlider.value = "0";
+  (document.getElementById("imdb-score-value") as HTMLElement).textContent =
+    "0";
+  (document.getElementById("tomato-score-value") as HTMLElement).textContent =
+    "0%";
+  (document.getElementById("popcorn-score-value") as HTMLElement).textContent =
+    "0%";
 
   // Load the stored API key and filter settings from chrome.storage.local
-  chrome.storage.local.get(["NFRatingsSettings"], (result: { NFRatingsSettings?: { apiKey?: string; filter?: { minIMDbScore?: number; minTomatoScore?: number; minPopcornScore?: number; }; }; }) => {
+  chrome.storage.local.get(["NFRatingsSettings"], (result) => {
     if (result.NFRatingsSettings && result.NFRatingsSettings.apiKey) {
       apiKeyInput.value = result.NFRatingsSettings.apiKey;
     }
@@ -18,18 +44,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       const filter = result.NFRatingsSettings.filter;
       if (filter.minIMDbScore !== undefined) {
         minIMDbScoreSlider.value = filter.minIMDbScore.toString();
-        document.getElementById("imdb-score-value")!.textContent =
-          filter.minIMDbScore.toString();
+        (
+          document.getElementById("imdb-score-value") as HTMLElement
+        ).textContent = filter.minIMDbScore.toString();
       }
       if (filter.minTomatoScore !== undefined) {
         minTomatoScoreSlider.value = filter.minTomatoScore.toString();
-        document.getElementById("tomato-score-value")!.textContent =
-          filter.minTomatoScore.toString();
+        (
+          document.getElementById("tomato-score-value") as HTMLElement
+        ).textContent = filter.minTomatoScore + "%";
       }
       if (filter.minPopcornScore !== undefined) {
         minPopcornScoreSlider.value = filter.minPopcornScore.toString();
-        document.getElementById("popcorn-score-value")!.textContent =
-          filter.minPopcornScore.toString();
+        (
+          document.getElementById("popcorn-score-value") as HTMLElement
+        ).textContent = filter.minPopcornScore + "%";
       }
     }
   });
@@ -51,17 +80,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   saveApiKeyButton.addEventListener("click", () => {
     const apiKey = apiKeyInput.value.trim();
     if (apiKey) {
-      chrome.storage.local.get(["NFRatingsSettings"], (result: { NFRatingsSettings?: { apiKey?: string; filter?: any; }; }) => {
+      chrome.storage.local.get(["NFRatingsSettings"], (result) => {
         const settings = result.NFRatingsSettings || {};
         settings.apiKey = apiKey;
         chrome.storage.local.set({ NFRatingsSettings: settings }, () => {
-          document.querySelector(".collapsible")!.classList.remove("active");
-          document.querySelector(".content")!.style.display = "none";
+          (
+            document.querySelector(".collapsible") as HTMLElement
+          ).classList.remove("active");
+          (document.querySelector(".content") as HTMLElement).style.display =
+            "none";
 
           // Send a message to the content script to apply the filter
           chrome.tabs.query({ url: "https://www.netflix.com/*" }, (tabs) => {
             tabs.forEach((tab) => {
-              chrome.tabs.sendMessage(tab.id, { action: "handleTitleUpdates" });
+              chrome.tabs.sendMessage(tab.id as number, {
+                action: "handleTitleUpdates",
+              });
             });
           });
         });
@@ -71,18 +105,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Update slider values on input
   minIMDbScoreSlider.addEventListener("input", () => {
-    document.getElementById("imdb-score-value")!.textContent =
+    (document.getElementById("imdb-score-value") as HTMLElement).textContent =
       minIMDbScoreSlider.value;
   });
 
   minTomatoScoreSlider.addEventListener("input", () => {
-    document.getElementById("tomato-score-value")!.textContent =
+    (document.getElementById("tomato-score-value") as HTMLElement).textContent =
       minTomatoScoreSlider.value + "%";
   });
 
   minPopcornScoreSlider.addEventListener("input", () => {
-    document.getElementById("popcorn-score-value")!.textContent =
-      minPopcornScoreSlider.value + "%";
+    (
+      document.getElementById("popcorn-score-value") as HTMLElement
+    ).textContent = minPopcornScoreSlider.value + "%";
   });
 
   // Apply filter settings
@@ -97,21 +132,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       minPopcornScore,
     };
 
-    chrome.storage.local.get(["NFRatingsSettings"], (result: { NFRatingsSettings?: { apiKey?: string; filter?: any; }; }) => {
+    chrome.storage.local.get(["NFRatingsSettings"], (result) => {
       const settings = result.NFRatingsSettings || {};
       settings.filter = filter;
       chrome.storage.local.set({ NFRatingsSettings: settings }, () => {
-        document.getElementById("status")!.textContent = "Settings applied.";
-        document.getElementById("status")!.style.color = "grey";
+        (document.getElementById("status") as HTMLElement).textContent =
+          "Settings applied.";
+        (document.getElementById("status") as HTMLElement).style.color = "grey";
 
         // Collapse the API key section after applying settings
-        document.querySelector(".collapsible")!.classList.remove("active");
-        document.querySelector(".content")!.style.display = "none";
+        (
+          document.querySelector(".collapsible") as HTMLElement
+        ).classList.remove("active");
+        (document.querySelector(".content") as HTMLElement).style.display =
+          "none";
 
         // Send a message to the content script to apply the filter
         chrome.tabs.query({ url: "*://www.netflix.com/*" }, (tabs) => {
           tabs.forEach((tab) => {
-            chrome.tabs.sendMessage(tab.id, { action: "handleTitleUpdates" });
+            chrome.tabs.sendMessage(tab.id as number, {
+              action: "handleTitleUpdates",
+            });
           });
         });
       });
@@ -119,7 +160,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Clear the status message after 5 seconds
     setTimeout(() => {
-      document.getElementById("status")!.textContent = "";
+      (document.getElementById("status") as HTMLElement).textContent = "";
     }, 5000);
   });
 
@@ -128,15 +169,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     minIMDbScoreSlider.value = "0";
     minTomatoScoreSlider.value = "0";
     minPopcornScoreSlider.value = "0";
-    document.getElementById("imdb-score-value")!.textContent = "0";
-    document.getElementById("tomato-score-value")!.textContent = "0%";
-    document.getElementById("popcorn-score-value")!.textContent = "0%";
+    (document.getElementById("imdb-score-value") as HTMLElement).textContent =
+      "0";
+    (document.getElementById("tomato-score-value") as HTMLElement).textContent =
+      "0%";
+    (
+      document.getElementById("popcorn-score-value") as HTMLElement
+    ).textContent = "0%";
   });
 
   // Toggle collapsible content
   const collapsibles = document.querySelectorAll(".collapsible");
   collapsibles.forEach((collapsible) => {
-    collapsible.addEventListener("click", function () {
+    collapsible.addEventListener("click", function (this: HTMLElement) {
       this.classList.toggle("active");
       const content = this.nextElementSibling as HTMLElement;
       if (content.style.display === "block") {

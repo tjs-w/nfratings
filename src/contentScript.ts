@@ -1,8 +1,24 @@
-let cardContainerMap = {};
+/// <reference types="chrome"/>
 
-// 7 days in milliseconds for dict `titleToRatingsMap`
-const TTL = 7 * 24 * 60 * 60 * 1000;
-let titleToRatingsMap = {};
+// Define types for the ratings data
+type Ratings = {
+  imdbRating: string | null;
+  imdbID: string | null;
+  tomatoMeter: string | null;
+  tomatoUserRating: string | null;
+} | null;
+
+type TitleToRatingsMap = {
+  [key: string]: {
+    ratings: Ratings;
+    timestamp: number;
+  };
+};
+
+// Initialize variables
+let cardContainerMap: { [key: string]: any } = {};
+const TTL = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+let titleToRatingsMap: TitleToRatingsMap = {};
 
 // Global image URLs
 const imdbLogoURL =
@@ -18,112 +34,103 @@ const userFreshLogoURL =
 const userRottenLogoURL =
   "https://upload.wikimedia.org/wikipedia/commons/6/63/Rotten_Tomatoes_negative_audience.svg";
 
-let taskQueue = Promise.resolve(); // Initialize a task queue
+let taskQueue: Promise<void> = Promise.resolve(); // Initialize a task queue
 
 // Function to fetch ratings for a title with retry mechanism
-async function fetchRatings(title, retries = 3) {
+async function fetchRatings(title: string): Promise<Ratings | null> {
   try {
-    const response = await chrome.runtime.sendMessage({
+    const response: any = await chrome.runtime.sendMessage({
       action: "fetchRatings",
       title,
     });
-
-    if (response.status === "success") {
-      console.debug("%cRatings:", "color: green;", response.ratings);
+    if (response?.status === "success") {
+      logger.debug("%cRatings:", "color: green;", response.ratings);
       return response.ratings;
-    } else {
-      console.error("%cFailed to fetch ratings", "color: red;", response.error);
-      return null;
     }
+    return null;
   } catch (error) {
-    if (retries > 0) {
-      console.warn("%cRetry fetching ratings:", "color: orange;", retries - 1);
-      return fetchRatings(title, retries - 1);
-    } else {
-      console.error("%cError fetching ratings:", "color: red;", error);
-      return null;
-    }
+    logger.error("%cError fetching ratings:", error);
+    return null;
   }
 }
 
-function getTitleToRatingsMap() {
-  return chromeStorageGet(["NFRatingsData"])
-    .then((result) => {
-      const serializedMap = result.NFRatingsData?.titleToRatingsMap;
-      if (!serializedMap) {
-        console.info(
-          "%cNo titleToRatingsMap found in local storage",
-          "color: blue;"
-        );
-        return {};
-      }
-
-      const map = JSON.parse(serializedMap);
-      const now = Date.now();
-      let updated = 0,
-        evictions = 0;
-      const initialCount = Object.keys(map).length;
-
-      for (const title in map) {
-        const { timestamp } = map[title];
-        if (now - timestamp >= TTL) {
-          if (Math.random() < 0.5) {
-            // Randomly evict entries wtih 50% probability
-            delete map[title];
-            evictions++;
-          } else {
-            // Fetch recent ratings for the remaining entries
-            fetchRatings(title)
-              .then((ratings) => {
-                if (ratings) {
-                  map[title] = fetchRatings(title);
-                  updated++;
-                }
-              })
-              .catch((error) => {
-                console.error(
-                  `%cError fetching ratings for title: ${title}`,
-                  "color: red;",
-                  error
-                );
-              });
-          }
-        }
-      }
-
-      const finalCount = Object.keys(map).length;
-      if (evictions > 0 || updated > 0) {
-        chromeStorageSet({
-          "NFRatingsData.titleToRatingsMap": JSON.stringify(map),
-        }).then(() => {
-          console.info(
-            `%cLoaded ${initialCount} entries from local storage, updated ${updated}, evicted ${evictions}, ${finalCount} entries remain`,
-            "color: orange;"
-          );
-        });
-      } else {
-        console.info(
-          `%cLoaded ${initialCount} entries from local storage, ${finalCount} entries remain`,
-          "color: blue;"
-        );
-      }
-
-      return map;
-    })
-    .catch((error) => {
-      console.error(
-        "%cError loading titleToRatingsMap from local storage:",
-        "color: red;",
-        error
+// Function to get titleToRatingsMap from storage
+async function getTitleToRatingsMap(): Promise<TitleToRatingsMap> {
+  try {
+    const result = await chromeStorageGet(["NFRatingsData"]);
+    const serializedMap = result.NFRatingsData?.titleToRatingsMap;
+    if (!serializedMap) {
+      logger.info(
+        "%cNo titleToRatingsMap found in local storage",
+        "color: blue;"
       );
       return {};
-    });
+    }
+
+    const map: TitleToRatingsMap = JSON.parse(serializedMap);
+    const now = Date.now();
+    let updated = 0,
+      evictions = 0;
+    const initialCount = Object.keys(map).length;
+
+    for (const title in map) {
+      const { timestamp } = map[title];
+      if (now - timestamp >= TTL) {
+        if (Math.random() < 0.5) {
+          // Randomly evict entries with 50% probability
+          delete map[title];
+          evictions++;
+        } else {
+          // Fetch recent ratings for the remaining entries
+          fetchRatings(title)
+            .then((ratings) => {
+              if (ratings) {
+                map[title] = { ratings, timestamp: Date.now() };
+                updated++;
+              }
+            })
+            .catch((error) => {
+              logger.error(
+                `%cError fetching ratings for title: ${title}`,
+
+                error
+              );
+            });
+        }
+      }
+    }
+
+    const finalCount = Object.keys(map).length;
+    if (evictions > 0 || updated > 0) {
+      await chromeStorageSet({
+        "NFRatingsData.titleToRatingsMap": JSON.stringify(map),
+      });
+      logger.info(
+        `%cLoaded ${initialCount} entries from local storage, updated ${updated}, evicted ${evictions}, ${finalCount} entries remain`,
+        "color: orange;"
+      );
+    } else {
+      logger.info(
+        `%cLoaded ${initialCount} entries from local storage, ${finalCount} entries remain`,
+        "color: blue;"
+      );
+    }
+
+    return map;
+  } catch (error) {
+    logger.error(
+      "%cError loading titleToRatingsMap from local storage:",
+
+      error
+    );
+    return {};
+  }
 }
 
 // Function to set the titleToRatingsMap and save it to local storage
-async function setTitleToRatingsMap(newMap) {
+async function setTitleToRatingsMap(newMap: TitleToRatingsMap): Promise<void> {
   try {
-    console.info(
+    logger.info(
       `%cSaving ${
         Object.keys(titleToRatingsMap).length
       } entries to local storage`,
@@ -132,30 +139,32 @@ async function setTitleToRatingsMap(newMap) {
     await chromeStorageSet({
       NFRatingsData: { titleToRatingsMap: JSON.stringify(titleToRatingsMap) },
     });
-    console.info(
+    logger.info(
       "%cTitleToRatingsMap successfully saved to local storage",
       "color: green;"
     );
   } catch (error) {
-    console.error(
+    logger.error(
       "%cError saving titleToRatingsMap to local storage:",
-      "color: red;",
+
       error
     );
   }
 }
 
 // Function to extract title from the element
-function extractTitle(element) {
-  return element.textContent
-    .trim()
-    .replace(/- Netflix$/, "")
-    .replace(/\(.*\)$/, "")
-    .trim();
+function extractTitle(element: Element): string {
+  return (
+    element.textContent
+      ?.trim()
+      .replace(/- Netflix$/, "")
+      .replace(/\(.*\)$/, "")
+      .trim() || ""
+  );
 }
 
 // Function to create IMDb rating element
-function createIMDBRating(imdbRating, imdbID) {
+function createIMDBRating(imdbRating: string, imdbID: string): HTMLElement {
   const imdbLink = document.createElement("a");
   imdbLink.href = `https://www.imdb.com/title/${imdbID}`;
   imdbLink.target = "_blank";
@@ -174,7 +183,7 @@ function createIMDBRating(imdbRating, imdbID) {
   const imdbRatingText = document.createElement("span");
   imdbRatingText.style.fontWeight = "bold";
   imdbRatingText.style.fontSize = "1.2em";
-  imdbRatingText.textContent = imdbRating;
+  imdbRatingText.textContent = imdbRating || "";
 
   imdbLink.appendChild(imdbLogo);
   imdbLink.appendChild(imdbRatingText);
@@ -183,11 +192,14 @@ function createIMDBRating(imdbRating, imdbID) {
 }
 
 // Function to create Tomato rating element
-function createTomatoRating(tomatoMeter, title) {
-  let rtLogoSrc;
-  if (tomatoMeter >= 75) {
+function createTomatoRating(
+  tomatoMeter: string | null,
+  title: string
+): HTMLElement {
+  let rtLogoSrc: string;
+  if (tomatoMeter && parseFloat(tomatoMeter) >= 75) {
     rtLogoSrc = certifiedFreshLogoURL; // Certified Fresh
-  } else if (tomatoMeter >= 60) {
+  } else if (tomatoMeter && parseFloat(tomatoMeter) >= 60) {
     rtLogoSrc = freshLogoURL; // Fresh
   } else {
     rtLogoSrc = rottenLogoURL; // Rotten
@@ -213,7 +225,7 @@ function createTomatoRating(tomatoMeter, title) {
   const rtRatingText = document.createElement("span");
   rtRatingText.style.fontWeight = "bold";
   rtRatingText.style.fontSize = "1.2em";
-  rtRatingText.textContent = `${tomatoMeter}%`;
+  rtRatingText.textContent = `${tomatoMeter || "0"}%`;
 
   rtLink.appendChild(rtLogo);
   rtLink.appendChild(rtRatingText);
@@ -222,9 +234,12 @@ function createTomatoRating(tomatoMeter, title) {
 }
 
 // Function to create Tomato user rating element
-function createTomatoUserRating(tomatoUserRating, title) {
-  let rtUserLogoSrc, rtUserLogoWidth;
-  if (tomatoUserRating >= 60) {
+function createTomatoUserRating(
+  tomatoUserRating: string | null,
+  title: string
+): HTMLElement {
+  let rtUserLogoSrc: string, rtUserLogoWidth: string;
+  if (tomatoUserRating && parseFloat(tomatoUserRating) >= 60) {
     rtUserLogoSrc = userFreshLogoURL; // Full popcorn bucket
     rtUserLogoWidth = "14px";
   } else {
@@ -251,7 +266,7 @@ function createTomatoUserRating(tomatoUserRating, title) {
   const rtUserRatingText = document.createElement("span");
   rtUserRatingText.style.fontWeight = "bold";
   rtUserRatingText.style.fontSize = "1.2em";
-  rtUserRatingText.textContent = `${tomatoUserRating}%`;
+  rtUserRatingText.textContent = `${tomatoUserRating || "0"}%`;
 
   rtUserLink.appendChild(rtUserLogo);
   rtUserLink.appendChild(rtUserRatingText);
@@ -260,7 +275,10 @@ function createTomatoUserRating(tomatoUserRating, title) {
 }
 
 // Function to create the ratings container
-function createRatingsContainer(ratings, title) {
+function createRatingsContainer(
+  ratings: Ratings | null,
+  title: string
+): HTMLElement {
   const { imdbRating, imdbID, tomatoMeter, tomatoUserRating } = ratings || {};
   const newRatingsContainer = document.createElement("div");
   newRatingsContainer.classList.add("ratings-container"); // Add a class for easier identification
@@ -270,7 +288,7 @@ function createRatingsContainer(ratings, title) {
 
   // Append ratings if present
   if (imdbRating) {
-    newRatingsContainer.appendChild(createIMDBRating(imdbRating, imdbID));
+    newRatingsContainer.appendChild(createIMDBRating(imdbRating, imdbID ?? ""));
   }
   if (tomatoMeter) {
     newRatingsContainer.appendChild(createTomatoRating(tomatoMeter, title));
@@ -285,22 +303,25 @@ function createRatingsContainer(ratings, title) {
 }
 
 // Function to apply fade effect based on ratings
-async function applyFadeEffect(container, ratings) {
-  settings = await chromeStorageGet(["NFRatingsSettings"]);
+async function applyFadeEffect(
+  container: Element,
+  ratings: Ratings
+): Promise<void> {
+  const settings = await chromeStorageGet(["NFRatingsSettings"]);
   const filter = settings.NFRatingsSettings?.filter || {};
   if (!filter) {
-    console.error("%cError fetching filter settings", "color: red;");
+    logger.error("%cError fetching filter settings", "color: red;");
   }
 
   const { minIMDbScore, minTomatoScore, minPopcornScore } = filter;
-  container.style.opacity = "1";
+  (container as HTMLElement).style.opacity = "1";
 
   if (
     ratings?.imdbRating &&
     minIMDbScore &&
     parseFloat(ratings.imdbRating) < minIMDbScore
   ) {
-    container.style.opacity = "0.2";
+    (container as HTMLElement).style.opacity = "0.2";
   }
 
   if (
@@ -308,7 +329,7 @@ async function applyFadeEffect(container, ratings) {
     minTomatoScore &&
     parseFloat(ratings.tomatoMeter) < minTomatoScore
   ) {
-    container.style.opacity = "0.2";
+    (container as HTMLElement).style.opacity = "0.2";
   }
 
   if (
@@ -316,12 +337,12 @@ async function applyFadeEffect(container, ratings) {
     minPopcornScore &&
     parseFloat(ratings.tomatoUserRating) < minPopcornScore
   ) {
-    container.style.opacity = "0.2";
+    (container as HTMLElement).style.opacity = "0.2";
   }
 }
 
 // Function to add ratings to titles
-async function addRatingsToTitles() {
+async function addRatingsToTitles(): Promise<void> {
   const titleCardContainers = document.querySelectorAll(
     ".title-card-container"
   );
@@ -330,26 +351,26 @@ async function addRatingsToTitles() {
   for (const container of titleCardContainers) {
     const cardElement = container.querySelector(".title-card");
     if (!cardElement) {
-      console.error("%cCard element not found for container", "color: red;");
+      logger.error("%cCard element not found for container", "color: red;");
       continue; // Skip if card element is not found
     }
 
     const titleElement = container.querySelector(".fallback-text");
     if (!titleElement) {
-      console.error("%cTitle element not found for container", "color: red;");
+      logger.error("%cTitle element not found for container", "color: red;");
       continue; // Skip if title element is not found
     }
 
     const title = extractTitle(titleElement);
     if (!title) {
-      console.error(`%cTitle not found for title: ${title}`, "color: red;");
+      logger.error(`%cTitle not found for title: ${title}`, "color: red;");
       continue; // Skip if title is not found in the map
     }
 
     const existingRatingsContainer =
       container.querySelector(".ratings-container");
     if (existingRatingsContainer) {
-      // console.debug(
+      // logger.debug(
       //   `%cRatings container already exists for title: ${title}`,
       //   "color: green;"
       // );
@@ -361,20 +382,14 @@ async function addRatingsToTitles() {
     }
 
     if (!(title in cardContainerMap)) {
-      let ratings = titleToRatingsMap[title]?.ratings;
+      let ratings: Ratings | null = titleToRatingsMap[title]?.ratings;
       if (!ratings) {
-        console.debug(`Fetching ratings for title: ${title}`);
-        ts = Date.now();
         ratings = await fetchRatings(title);
-        console.debug(`Fetched in time: ${Date.now() - ts}ms`);
         if (!ratings) {
-          console.error(
-            `%cFailed fetching ratings for title: ${title}`,
-            "color: red;"
-          );
+          logger.error(`%cFailed fetching ratings for title`, "color: red;");
           continue;
         }
-        titleToRatingsMap[title] = { ratings: ratings, timestamp: Date.now() };
+        titleToRatingsMap[title] = { ratings, timestamp: Date.now() };
         isRatingsFetched = true;
       }
       cardContainerMap[title] = {
@@ -392,18 +407,18 @@ async function addRatingsToTitles() {
 }
 
 // Function to handle title updates in a queue (mutual exclusion)
-async function handleTitleUpdates() {
+async function handleTitleUpdates(): Promise<void> {
   taskQueue = taskQueue
     .then(async () => {
       await addRatingsToTitles();
     })
     .catch((error) => {
-      console.error("%cError updating titles:", "color: red;", error);
+      logger.error("%cError updating titles:", error);
     });
 }
 
 // Function to initialize the script
-async function initialize() {
+async function initialize(): Promise<void> {
   try {
     titleToRatingsMap = (await getTitleToRatingsMap()) || {};
     await handleTitleUpdates(); // Call handleTitleUpdates instead of addRatingsToTitles
@@ -421,7 +436,7 @@ async function initialize() {
       handleTitleUpdates();
     });
   } catch (error) {
-    console.error("%cError during initialization:", "color: red;", error);
+    logger.error("%cError during initialization:", error);
   }
 }
 
