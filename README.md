@@ -17,6 +17,12 @@ Install the Chrome Extension publishded to Chrome Web Store [here]().
 - **Customizable Filters <img src="https://upload.wikimedia.org/wikipedia/commons/d/da/Rotten_Tomatoes_positive_audience.svg" alt="Rotten Tomatoes Users" width="18px">:** Set minimum rating thresholds to filter out low-rated content.
 - **Real-time Updates**: Ratings are fetched and displayed in real-time.
 
+## Getting the OMDb API Access Key
+
+1. Go to https://www.omdbapi.com/apikey.aspx and fill in the details.
+2. Create the Access Key and copy it from the email reply.
+3. Save it from the popup window for the Extension in Chrome Browser.
+
 ## Developer Setup
 
 1. **Clone the Repository**:
