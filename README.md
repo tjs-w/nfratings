@@ -32,6 +32,12 @@ Install the Chrome Extension publishded to Chrome Web Store [here]().
 
 ![PopupApiKey](./public/screenshots/Popup_ApiKey_1280x800.png)
 
+## Getting the OMDb API Access Key
+
+1. Go to https://www.omdbapi.com/apikey.aspx and fill in the details.
+2. Create the Access Key and copy it from the email reply.
+3. Save it from the popup window for the Extension in Chrome Browser.
+
 ## Developer Setup
 
 ### 1. Clone the Repository
