@@ -37,22 +37,22 @@ const userRottenLogoURL =
 let taskQueue: Promise<void> = Promise.resolve(); // Initialize a task queue
 
 // Function to fetch ratings for a title with retry mechanism
-async function fetchRatings(title: string): Promise<Ratings | null> {
-  try {
+const fetchRatings = circuitBreaker(
+  async (title: string): Promise<Ratings | null> => {
     const response: any = await chrome.runtime.sendMessage({
       action: "fetchRatings",
       title,
     });
     if (response?.status === "success") {
+      if (response.ratings == null) {
+        throw new Error(`Failed to fetch ratings: null`);
+      }
       logger.debug("%cRatings:", "color: green;", response.ratings);
-      return response.ratings;
+      return response.ratings as Ratings;
     }
-    return null;
-  } catch (error) {
-    logger.error("%cError fetching ratings:", error);
-    return null;
+    throw new Error(`Failed to fetch ratings: ${response?.error}`);
   }
-}
+);
 
 // Function to get titleToRatingsMap from storage
 async function getTitleToRatingsMap(): Promise<TitleToRatingsMap> {
@@ -69,50 +69,29 @@ async function getTitleToRatingsMap(): Promise<TitleToRatingsMap> {
 
     const map: TitleToRatingsMap = JSON.parse(serializedMap);
     const now = Date.now();
-    let updated = 0,
-      evictions = 0;
+    let updated = 0;
     const initialCount = Object.keys(map).length;
 
     for (const title in map) {
       const { timestamp } = map[title];
-      if (now - timestamp >= TTL) {
-        if (Math.random() < 0.5) {
-          // Randomly evict entries with 50% probability
-          delete map[title];
-          evictions++;
-        } else {
-          // Fetch recent ratings for the remaining entries
-          fetchRatings(title)
-            .then((ratings) => {
-              if (ratings) {
-                map[title] = { ratings, timestamp: Date.now() };
-                updated++;
-              }
-            })
-            .catch((error) => {
-              logger.error(
-                `%cError fetching ratings for title: ${title}`,
-
-                error
-              );
-            });
+      if (now - timestamp >= TTL && Math.random() < 0.33) {
+        // Fetch recent ratings for the entries older than TTL 1/3rd of the time
+        const ratings = await fetchRatings(title);
+        if (ratings) {
+          map[title] = { ratings, timestamp: Date.now() };
+          updated++;
         }
       }
     }
 
     const finalCount = Object.keys(map).length;
-    if (evictions > 0 || updated > 0) {
+    if (updated > 0) {
       await chromeStorageSet({
         "NFRatingsData.titleToRatingsMap": JSON.stringify(map),
       });
       logger.info(
-        `%cLoaded ${initialCount} entries from local storage, updated ${updated}, evicted ${evictions}, ${finalCount} entries remain`,
+        `%cLoaded ${initialCount} entries from local storage, updated ${updated}, ${finalCount} entries remain`,
         "color: orange;"
-      );
-    } else {
-      logger.info(
-        `%cLoaded ${initialCount} entries from local storage, ${finalCount} entries remain`,
-        "color: blue;"
       );
     }
 
@@ -120,7 +99,6 @@ async function getTitleToRatingsMap(): Promise<TitleToRatingsMap> {
   } catch (error) {
     logger.error(
       "%cError loading titleToRatingsMap from local storage:",
-
       error
     );
     return {};

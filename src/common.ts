@@ -94,7 +94,7 @@ const createCircuitBreaker = (
     };
 };
 
-const circuitBreaker = createCircuitBreaker(3, 60000);
+const circuitBreaker = createCircuitBreaker(3, 600000);
 
 // Attach functions to the global scope
 (globalThis as any).chromeStorageGet = chromeStorageGet;
