@@ -10,8 +10,8 @@ Install the Chrome Extension publishded to Chrome Web Store [here]().
 
 ## Features
 
-- **IMDb Ratings <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb" width="30px"/>:** View IMDb ratings for each title.
-- **Rotten Tomatoes Scores:** Access Tomatometer <img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg" alt="Rotten Tomatoes Critics" width="20px"> and Audience Score <img src="https://upload.wikimedia.org/wikipedia/commons/d/da/Rotten_Tomatoes_positive_audience.svg" alt="Rotten Tomatoes Users" width="18px">.
+- **IMDb Ratings:** View <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb" width="30px"/> ratings for each title.
+- **Rotten Tomatoes Scores:** AccViewess Tomatometer <img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg" alt="Rotten Tomatoes Critics" width="20px"> and Audience Score <img src="https://upload.wikimedia.org/wikipedia/commons/d/da/Rotten_Tomatoes_positive_audience.svg" alt="Rotten Tomatoes Users" width="18px">.
 - **Customizable Filters &#xe429;:** Set minimum rating thresholds to filter out low-rated content.
 
 ## Screenshots

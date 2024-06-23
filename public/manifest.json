@@ -3,7 +3,7 @@
   "name": "NFRatings",
   "version": "0.1.0",
   "description": "Adds IMDb and Rotten Tomatoes ratings to Netflix titles.",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab"],
   "background": {
     "service_worker": "background.js"
   },
