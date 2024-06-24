@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const minPopcornScoreSlider = document.getElementById(
     "min-popcorn-score"
   ) as HTMLInputElement;
+  const hideUnratedCheckbox = document.getElementById(
+    "hide-unrated"
+  ) as HTMLInputElement;
   const applySettingsButton = document.getElementById(
     "apply-settings"
   ) as HTMLButtonElement;
@@ -33,6 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     "0%";
   (document.getElementById("popcorn-score-value") as HTMLElement).textContent =
     "0%";
+  (document.getElementById("hide-unrated") as HTMLInputElement).checked = false;
 
   // Load the stored API key and filter settings from chrome.storage.local
   chrome.storage.local.get(["NFRatingsSettings"], (result) => {
@@ -59,6 +63,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         (
           document.getElementById("popcorn-score-value") as HTMLElement
         ).textContent = filter.minPopcornScore + "%";
+      }
+      if (filter.hideUnrated !== undefined) {
+        hideUnratedCheckbox.checked = filter.hideUnrated;
       }
     }
   });
@@ -125,11 +132,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const minIMDbScore = parseFloat(minIMDbScoreSlider.value);
     const minTomatoScore = parseFloat(minTomatoScoreSlider.value);
     const minPopcornScore = parseFloat(minPopcornScoreSlider.value);
+    const hideUnrated = hideUnratedCheckbox.checked;
 
     const filter = {
       minIMDbScore,
       minTomatoScore,
       minPopcornScore,
+      hideUnrated,
     };
 
     chrome.storage.local.get(["NFRatingsSettings"], (result) => {
@@ -169,6 +178,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     minIMDbScoreSlider.value = "0";
     minTomatoScoreSlider.value = "0";
     minPopcornScoreSlider.value = "0";
+    hideUnratedCheckbox.checked = false;
+
     (document.getElementById("imdb-score-value") as HTMLElement).textContent =
       "0";
     (document.getElementById("tomato-score-value") as HTMLElement).textContent =
@@ -176,6 +187,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     (
       document.getElementById("popcorn-score-value") as HTMLElement
     ).textContent = "0%";
+    (document.getElementById("hide-unrated") as HTMLInputElement).checked =
+      false;
   });
 
   // Toggle collapsible content

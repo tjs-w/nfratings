@@ -34,7 +34,7 @@ Install the Chrome Extension publishded to Chrome Web Store [here]().
 
 ## Getting the OMDb API Access Key
 
-1. Go to https://www.omdbapi.com/apikey.aspx and fill in the details.
+1. Go to <https://www.omdbapi.com/apikey.aspx> and fill in the details.
 2. Create the Access Key and copy it from the email reply.
 3. Save it from the popup window for the Extension in Chrome Browser.
 
@@ -60,6 +60,7 @@ npm run build
 ```
 
 Debug:
+
 ```sh
 npm run watch
 ```

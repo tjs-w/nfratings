@@ -1,6 +1,6 @@
 {
   "name": "nfratings",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Adds IMDb and Rotten Tomatoes ratings to Netflix titles.",
   "private": true,
   "scripts": {

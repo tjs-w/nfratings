@@ -291,8 +291,19 @@ async function applyFadeEffect(
     logger.error("%cError fetching filter settings", "color: red;");
   }
 
-  const { minIMDbScore, minTomatoScore, minPopcornScore } = filter;
+  const { minIMDbScore, minTomatoScore, minPopcornScore, hideUnrated } = filter;
   (container as HTMLElement).style.opacity = "1";
+
+  if (hideUnrated) {
+    if (
+      !ratings ||
+      (ratings?.imdbRating == null &&
+        ratings?.tomatoMeter == null &&
+        ratings?.tomatoUserRating == null)
+    ) {
+      (container as HTMLElement).style.opacity = "0.2";
+    }
+  }
 
   if (
     ratings?.imdbRating &&
