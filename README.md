@@ -6,7 +6,7 @@ NFRatings enhances your Netflix experience by integrating IMDb, Rotten Tomatoes 
 
 ## <img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Google_Chrome_Web_Store_icon_2022.svg" alt="Chrome Web Store" width="20px"> Chrome Extension
 
-Install the Chrome Extension publishded to Chrome Web Store [here]().
+Install NFRatings from the Chrome Web Store [here](https://chromewebstore.google.com/detail/nfratings/ibakmpmpajijhljfbbjaendabghlpjdl?authuser=0&hl=en).
 
 ## Features
 
